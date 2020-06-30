@@ -4,7 +4,7 @@
 //
 //  Created by Jonas Zingler on 19.06.20.
 //  Copyright © 2020 Jonas Zingler. All rights reserved.
-//
+//  Model
 
 import Foundation
 
@@ -13,6 +13,7 @@ struct MemoryGame<CardContent> {
     
     func choose(card: Card) {
         print("card chosen: \(card)")
+        
     }
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) ->CardContent) {
@@ -22,6 +23,7 @@ struct MemoryGame<CardContent> {
             cards.append(Card(content: content, id: pairIndex*2))
             cards.append(Card(content: content, id: pairIndex*2+1))
         }
+        cards.shuffle() // shuffle the cards here
     }
     
     
