@@ -8,19 +8,29 @@
 
 import SwiftUI                          // imports package "SwiftUI"
 
+
+
+
+
 struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
+//    @ViewBuilder
+//    private func body(for size: CGSize) -> some View {
+//            Button(action: {print("Hello World")}) {
+//                Text("New Game")
+//            }
+//        }
+    
     var body: some View {
-        HStack {
-            ForEach(viewModel.cards) { card in
+        Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture{
-                    self.viewModel.choose(card: card) // self will gonna be fixed here in the future
+                    self.viewModel.choose(card: card)
                 }
+                .padding(5)
             }
-        }
-            .padding()
-            .foregroundColor(Color.orange)
+                .padding()
+                .foregroundColor(Color.orange)
     }
 }
 
@@ -31,39 +41,39 @@ struct CardView: View {
     var body: some View {
         GeometryReader{geometry in
             self.body(for: geometry.size)
-            
         }
     }
-    
-    func body(for size: CGSize) -> some View {
-        ZStack {
-            if card.isFaceUp {
-                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
-                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
+    @ViewBuilder // interprets the function below as a list of views
+    private func body(for size: CGSize) -> some View {
+        if card.isFaceUp || !card.isMatched{
+            ZStack {
+                Pie(startAngle: Angle.degrees(0-90), endAngle: Angle.degrees(120-90), clockwise: true)
+                    .padding(5)
+                    .opacity(0.4)
                 Text(card.content)
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius).fill()
-            
+                    .font(Font.system(size: fontSize(for: size)))
             }
-        
+            .cardify(isFaceUp: card.isFaceUp) // self build modifier for card layout
         }
-        .aspectRatio(2/3, contentMode: .fit)
-        .font(Font.system(size: fontSize(for: size)))
     }
+        
     
     // MARK: - Drawing Constants
     
-    let cornerRadius: CGFloat = 10
-    let edgeLineWidth: CGFloat = 4
-    func fontSize(for size: CGSize) -> CGFloat {
-        min(size.width, size.height) * 0.75
+
+   private func fontSize(for size: CGSize) -> CGFloat {
+            min(size.width, size.height) * 0.7
     }
 }
 
 
 
+
+// Just for Preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        EmojiMemoryGameView(viewModel: EmojiMemoryGame())
+        let game = EmojiMemoryGame()
+        game.choose(card: game.cards[0])
+        return EmojiMemoryGameView(viewModel: game)
     }
 }
